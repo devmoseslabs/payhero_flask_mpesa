@@ -1,31 +1,36 @@
-# Mini Pesa – Simple M-Pesa STK Push App
+## ◇────── PAYHERO_FLASK_MPESA ───────◇
 
-![Python](https://img.shields.io/badge/Python-3.7+-yellow) ![Flask](https://img.shields.io/badge/Framework-Flask-blue) ![PayHero](https://img.shields.io/badge/PayHero-API-green)
+ㅤ
+<p align="center">
+  <a href="" rel="noopener">
+    <img width="300px" height="300px" src="https://your-image-host.com/logo.png" alt="Mini Pesa Logo">
+  </a>
+</p>
 
-A lightweight Flask app to initiate **M-Pesa STK push payments**, handle callbacks, and track payment status in a local database.
+![Python](https://img.shields.io/badge/Python-3.7+-blue) ![Flask](https://img.shields.io/badge/Flask-Framework-orange) ![M-Pesa](https://img.shields.io/badge/M--Pesa-PayHero-green) ![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
 ---
 
 ## 🌟 Features
 
-- 🖥️ **Single-page interface** – Modern and responsive form  
-- 💸 **M-Pesa STK Push** – Initiate payments directly to users’ phones  
-- 🔄 **Callback handling** – Automatic status updates  
-- 📊 **Database logging** – Store all payment attempts locally  
-- ⚡ **Lightweight & simple** – Easy setup and integration  
+- 💸 Initiate **M-Pesa STK Push** payments  
+- 🖥️ Single-page **responsive interface**  
+- 🔄 **Callback handling** and real-time status updates  
+- 📊 Track all payment attempts in a **local database**  
+- ⚡ Lightweight and easy to configure  
 
 ---
 
-## 🚀 Setup
+## 🚀 Installation & Setup
 
 ### 1️⃣ Environment Variables
 
-Create a `.env` file (do **not** upload this file):
+Create a `.env` file in your project root:
 
 ```env
 SECRET_KEY=your-secret-key
-API_USERNAME=your-api-username
-API_PASSWORD=your-api-password
+API_USERNAME=your-payhero-username
+API_PASSWORD=your-payhero-password
 CALLBACK_URL=https://your-domain.com/callback
 CHANNEL_ID=1959
 Use env.example as a template.
@@ -34,21 +39,14 @@ Use env.example as a template.
 bash
 Copy code
 pip install -r requirements.txt
-3️⃣ Run the Application
+3️⃣ Run the App
 bash
 Copy code
 python app.py
 Open http://localhost:7000 in your browser.
 
-📝 Usage
-Fill Amount, Phone Number, and Reference.
-
-Click Initiate M-Pesa Payment.
-
-Complete payment on your phone.
-
-Watch real-time status updates on the web page.
-
+📷 Screenshots
+<details> <summary><b>Click to view the payment page</b></summary> <br/> <p align="center"> <img src="https://your-image-host.com/payment_page.png" width="400px"> </p> </details> <details> <summary><b>Click to view callback logs</b></summary> <br/> <p align="center"> <img src="https://your-image-host.com/callback_logs.png" width="400px"> </p> </details>
 🔗 API Endpoints
 Endpoint	Method	Description
 /	GET	Serve payment page
@@ -63,9 +61,8 @@ mini_pesa/
 ├── app.py                 # Main Flask application
 ├── requirements.txt       # Python dependencies
 ├── templates/
-│   └── payment.html       # Payment page template
+│   └── payment.html       # Single-page payment interface
 ├── env.example            # Template for environment variables
-├── README.md              # Project instructions
 ├── transactions.db        # SQLite database (auto-created)
 └── callback_logs.json     # Callback logs (auto-created)
 ⚠️ Notes
@@ -76,5 +73,12 @@ Do not commit .env, transactions.db, or callback_logs.json.
 Payment PINs are never stored.
 
 Default CHANNEL_ID is 1959 (change if needed).
+
+📞 Support & Contact
+🐦 Telegram: @DevMoses
+
+🌐 Portfolio: devmoses.online
+
+📄 License
 
 Built with ❤️ by DevMoses
