@@ -201,7 +201,7 @@ def process_payment():
         payment_data = {
             'amount': int(amount),
             'phone_number': phone_number,
-            'channel_id': getenv('PAYHERO_CHANNEL_ID'),
+            'channel_id': os.getenv('PAYHERO_CHANNEL_ID'),
             'provider': 'm-pesa',
             'external_reference': external_reference,
             'callback_url': CALLBACK_URL
