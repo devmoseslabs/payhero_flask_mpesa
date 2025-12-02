@@ -381,9 +381,9 @@
                 return { valid: false, message: 'Must contain only digits' };
             }
             
-            // Check if starts with valid Kenyan mobile prefix (7 for Safaricom/Airtel, 1 for Telkom)
+            // Check if starts with valid Kenyan mobile prefix (7 or 1)
             if (!phoneDigits.startsWith('7') && !phoneDigits.startsWith('1')) {
-                return { valid: false, message: 'Must start with 7 (Safaricom/Airtel) or 1 (Telkom)' };
+                return { valid: false, message: 'Must start with 7 or 1 ' };
             }
             
             return { valid: true, message: '' };
