@@ -121,6 +121,41 @@
         .social-link:hover {
             transform: translateY(-3px);
         }
+        
+        .error-message {
+            color: #f87171;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        
+        .phone-prefix {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px 0 0 10px;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            color: #00FF9C;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 60px;
+        }
+        
+        .reference-counter {
+            font-size: 0.75rem;
+            color: #9CA3AF;
+            text-align: right;
+            margin-top: 2px;
+        }
+        
+        .reference-counter.warning {
+            color: #FBBF24;
+        }
+        
+        .reference-counter.error {
+            color: #F87171;
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 flex flex-col">
@@ -152,29 +187,44 @@
 
                     <div>
                         <label class="block text-sm font-medium mb-2">Phone Number</label>
-                        <input type="text" 
-                               name="phone_number" 
-                               id="phone_number"
-                               required 
-                               class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00FF9C] focus:border-transparent"
-                               placeholder="07XXXXXXXX or 2547XXXXXXXX">
-                        <p class="text-xs text-gray-400 mt-1">Enter your M-Pesa registered phone number</p>
+                        <div class="flex">
+                            <div class="phone-prefix">254</div>
+                            <input type="text" 
+                                   name="phone_number" 
+                                   id="phone_number"
+                                   required 
+                                   maxlength="9"
+                                   class="flex-1 px-4 py-3 bg-white/5 border border-white/10 border-l-0 rounded-r-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00FF9C] focus:border-transparent"
+                                   placeholder="7XXXXXXXX or 1XXXXXXXX">
+                        </div>
+                        <div class="flex justify-between">
+                            <p class="text-xs text-gray-400 mt-1">Enter 9 digits after 254 (e.g., 712345678 or 112345678)</p>
+                            <span id="phoneCounter" class="text-xs text-gray-400 mt-1">0/9</span>
+                        </div>
+                        <div id="phoneError" class="error-message"></div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium mb-2">Payment Reference</label>
                         <div class="flex space-x-2">
-                            <input type="text" 
-                                   name="external_reference" 
-                                   id="external_reference"
-                                   required 
-                                   class="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00FF9C] focus:border-transparent"
-                                   placeholder="e.g., Payment for services">
+                            <div class="relative flex-1">
+                                <input type="text" 
+                                       name="external_reference" 
+                                       id="external_reference"
+                                       required 
+                                       maxlength="8"
+                                       class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00FF9C] focus:border-transparent"
+                                       placeholder="e.g., PAY12345">
+                            </div>
                             <button type="button" id="generateReference" class="px-4 py-3 bg-[#00FF9C]/20 text-[#00FF9C] border border-[#00FF9C]/30 rounded-xl hover:bg-[#00FF9C]/30 transition">
                                 <i class="fas fa-random"></i>
                             </button>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">Describe what this payment is for</p>
+                        <div class="flex justify-between">
+                            <p class="text-xs text-gray-400 mt-1">Exactly 8 characters (letters/numbers)</p>
+                            <span id="referenceCounter" class="text-xs text-gray-400 mt-1">0/8</span>
+                        </div>
+                        <div id="referenceError" class="error-message"></div>
                     </div>
 
                     <button type="submit" id="submitBtn" class="w-full glass-button py-3 px-6 font-semibold text-lg">
@@ -193,7 +243,10 @@
                         <div class="w-6 h-6 rounded-full bg-[#00FF9C]/20 flex items-center justify-center flex-shrink-0 mt-1">
                             <span class="text-[#00FF9C] font-bold text-sm">1</span>
                         </div>
-                        <p class="text-gray-400 text-sm">Fill in amount, phone number, and reference</p>
+                        <div>
+                            <p class="text-gray-400 text-sm">Fill in amount, phone number (254 format)</p>
+                            <p class="text-xs text-gray-500 mt-1">Format: 254 + 9 digits (e.g., 254712345678)</p>
+                        </div>
                     </div>
 
                     <div class="flex items-start space-x-3">
@@ -217,6 +270,21 @@
                         <p class="text-gray-400 text-sm">Receive confirmation on this page and via SMS</p>
                     </div>
                 </div>
+
+                <!-- Important Notes 
+                <div class="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+                    <h3 class="font-semibold text-blue-400 mb-2">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Important Requirements
+                    </h3>
+                    <ul class="text-sm text-blue-300 space-y-1">
+                        <li>• <strong>Phone:</strong> Must start with 254 followed by 9 digits (e.g., 2547XXXXXXXX)</li>
+                        <li>• <strong>Reference:</strong> Exactly 8 characters (letters/numbers)</li>
+                        <li>• <strong>Amount:</strong> Minimum KES 1, whole numbers preferred</li>
+                        <li>• <strong>Network:</strong> Phone must have M-Pesa registered and active</li>
+                        <li>• <strong>Kenyan Only:</strong> Only Kenyan phone numbers accepted</li>
+                    </ul>
+                </div> -->
             </div>
         </div>
     </div>
@@ -235,7 +303,7 @@
                 </a>
                 
                 <!-- LinkedIn -->
-                <a href="https://linkedin.com/in/moseskeraso" 
+                <a href="https://ke.linkedin.com/in/moses-keraso-a3155b292" 
                    target="_blank" 
                    class="social-link text-gray-400 hover:text-blue-400 transition-colors duration-300"
                    title="LinkedIn">
@@ -292,47 +360,185 @@
     </div>
 
     <script>
-        // Generate random 6-letter reference
+        // Generate random 8-character reference
         function generateRandomReference() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 8; i++) {
                 result += chars.charAt(Math.floor(Math.random() * chars.length));
             }
             return result;
         }
 
+        // Validate Kenyan phone number (9 digits after 254)
+        function validateKenyanPhoneNumber(phoneDigits) {
+            // phoneDigits should be 9 digits (after 254 prefix)
+            if (phoneDigits.length !== 9) {
+                return { valid: false, message: 'Must be exactly 9 digits after 254' };
+            }
+            
+            if (!/^\d{9}$/.test(phoneDigits)) {
+                return { valid: false, message: 'Must contain only digits' };
+            }
+            
+            // Check if starts with valid Kenyan mobile prefix (7 for Safaricom/Airtel, 1 for Telkom)
+            if (!phoneDigits.startsWith('7') && !phoneDigits.startsWith('1')) {
+                return { valid: false, message: 'Must start with 7 (Safaricom/Airtel) or 1 (Telkom)' };
+            }
+            
+            return { valid: true, message: '' };
+        }
+
+        // Validate reference (exactly 8 characters, alphanumeric)
+        function validateReference(ref) {
+            if (ref.length !== 8) {
+                return { valid: false, message: 'Reference must be exactly 8 characters' };
+            }
+            
+            if (!/^[A-Za-z0-9]{8}$/.test(ref)) {
+                return { valid: false, message: 'Only letters and numbers allowed' };
+            }
+            
+            return { valid: true, message: '' };
+        }
+
+        // Update character counter with color coding
+        function updateCounter(elementId, currentLength, maxLength) {
+            const counter = document.getElementById(elementId);
+            counter.textContent = `${currentLength}/${maxLength}`;
+            
+            // Remove all classes
+            counter.className = 'reference-counter';
+            
+            // Add appropriate class based on length
+            if (currentLength === maxLength) {
+                counter.classList.add('text-green-400');
+            } else if (currentLength > maxLength * 0.7) {
+                counter.classList.add('warning');
+            } else if (currentLength > 0) {
+                counter.classList.add('text-gray-400');
+            }
+        }
+
         // Initialize form
         document.addEventListener('DOMContentLoaded', function() {
             // Generate initial random reference
-            document.getElementById('external_reference').value = generateRandomReference();
+            const initialRef = generateRandomReference();
+            document.getElementById('external_reference').value = initialRef;
+            updateCounter('referenceCounter', initialRef.length, 8);
             
             // Add click handler for generate button
             document.getElementById('generateReference').addEventListener('click', function() {
-                document.getElementById('external_reference').value = generateRandomReference();
+                const newRef = generateRandomReference();
+                document.getElementById('external_reference').value = newRef;
+                updateCounter('referenceCounter', newRef.length, 8);
+                
+                // Clear any reference error
+                document.getElementById('referenceError').style.display = 'none';
+                document.getElementById('referenceError').textContent = '';
             });
 
-            // Auto-format phone number
+            // Phone number input handler
             document.getElementById('phone_number').addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
+                const phoneError = document.getElementById('phoneError');
+                const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                const maxLength = 9;
                 
-                if (value.startsWith('0') && value.length <= 10) {
-                    value = value.substring(0, 10);
-                } else if (value.startsWith('254') && value.length <= 12) {
-                    value = value.substring(0, 12);
-                } else if (value.length > 0 && !value.startsWith('0') && !value.startsWith('254')) {
-                    value = '0' + value.substring(0, 9);
+                // Limit to 9 digits
+                if (value.length > maxLength) {
+                    e.target.value = value.substring(0, maxLength);
+                } else {
+                    e.target.value = value;
                 }
                 
-                e.target.value = value;
+                // Update counter
+                updateCounter('phoneCounter', e.target.value.length, maxLength);
+                
+                // Clear error when user starts typing
+                phoneError.style.display = 'none';
+                phoneError.textContent = '';
+                
+                // Validate on the fly if we have enough digits
+                if (e.target.value.length >= 9) {
+                    const validation = validateKenyanPhoneNumber(e.target.value);
+                    if (!validation.valid) {
+                        phoneError.textContent = validation.message;
+                        phoneError.style.display = 'block';
+                    }
+                }
             });
+
+            // Reference input handler
+            document.getElementById('external_reference').addEventListener('input', function(e) {
+                const refError = document.getElementById('referenceError');
+                const value = e.target.value.toUpperCase(); // Convert to uppercase
+                const maxLength = 8;
+                
+                // Limit to 8 characters and alphanumeric only
+                const cleanValue = value.replace(/[^A-Za-z0-9]/g, '');
+                if (cleanValue.length > maxLength) {
+                    e.target.value = cleanValue.substring(0, maxLength);
+                } else {
+                    e.target.value = cleanValue;
+                }
+                
+                // Update counter
+                updateCounter('referenceCounter', e.target.value.length, maxLength);
+                
+                // Clear error when user starts typing
+                refError.style.display = 'none';
+                refError.textContent = '';
+                
+                // Validate on the fly
+                if (e.target.value.length > 0) {
+                    const validation = validateReference(e.target.value);
+                    if (!validation.valid && e.target.value.length === maxLength) {
+                        refError.textContent = validation.message;
+                        refError.style.display = 'block';
+                    }
+                }
+            });
+
+            // Initialize counters
+            updateCounter('phoneCounter', 0, 9);
         });
 
         // Form submission handler
         document.getElementById('paymentForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const formData = new FormData(this);
+            const phoneDigits = document.getElementById('phone_number').value;
+            const reference = document.getElementById('external_reference').value;
+            const phoneError = document.getElementById('phoneError');
+            const refError = document.getElementById('referenceError');
+            
+            // Validate phone number before submission
+            const phoneValidation = validateKenyanPhoneNumber(phoneDigits);
+            if (!phoneValidation.valid) {
+                phoneError.textContent = phoneValidation.message;
+                phoneError.style.display = 'block';
+                document.getElementById('phone_number').focus();
+                return;
+            }
+            
+            // Validate reference before submission
+            const refValidation = validateReference(reference);
+            if (!refValidation.valid) {
+                refError.textContent = refValidation.message;
+                refError.style.display = 'block';
+                document.getElementById('external_reference').focus();
+                return;
+            }
+            
+            // Construct full phone number with 254 prefix
+            const fullPhoneNumber = '254' + phoneDigits;
+            
+            // Create form data and set the full phone number
+            const formData = new FormData();
+            formData.append('amount', document.getElementById('amount').value);
+            formData.append('phone_number', fullPhoneNumber);
+            formData.append('external_reference', reference);
+            
             const submitBtn = document.getElementById('submitBtn');
             const originalText = submitBtn.innerHTML;
             
@@ -498,7 +704,10 @@
             const statusTitle = document.getElementById('statusTitle').textContent;
             if (statusTitle !== 'Payment Successful') {
                 document.getElementById('paymentForm').reset();
-                document.getElementById('external_reference').value = generateRandomReference();
+                const newRef = generateRandomReference();
+                document.getElementById('external_reference').value = newRef;
+                updateCounter('referenceCounter', newRef.length, 8);
+                updateCounter('phoneCounter', 0, 9);
             }
         });
     </script>
