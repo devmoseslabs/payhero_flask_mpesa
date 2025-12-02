@@ -6,8 +6,6 @@ import os
 import json
 from datetime import datetime
 from dotenv import load_dotenv
-import hashlib
-import secrets
 
 # Load environment variables
 load_dotenv()
@@ -137,7 +135,7 @@ def index():
 
 @app.route('/pay', methods=['POST'])
 def process_payment():
-    """Process STK push payment"""
+    """Process STK push payment with 254 prefix requirement"""
     try:
         # Get form data
         amount = request.form.get('amount')
@@ -157,15 +155,43 @@ def process_payment():
         except ValueError:
             return jsonify({'success': False, 'error': 'Invalid amount format!'}), 400
         
-        # Validate phone number
-        if not (phone_number.startswith('254') or phone_number.startswith('07') or phone_number.startswith('+254')):
-            return jsonify({'success': False, 'error': 'Please enter a valid Kenyan phone number!'}), 400
+        # Clean and validate phone number - Must be in 254XXXXXXXXX format
+        phone_number = phone_number.replace(' ', '').replace('-', '').replace('+', '')
         
-        # Convert phone number to 254 format
-        if phone_number.startswith('07'):
-            phone_number = '254' + phone_number[1:]
-        elif phone_number.startswith('+254'):
-            phone_number = phone_number[1:]
+        # Ensure phone starts with 254 and is exactly 12 digits
+        if not phone_number.startswith('254'):
+            return jsonify({
+                'success': False, 
+                'error': 'Phone number must start with 254! Format: 2547XXXXXXXX or 2541XXXXXXXX'
+            }), 400
+        
+        if len(phone_number) != 12:
+            return jsonify({
+                'success': False, 
+                'error': 'Phone number must be 12 digits! Format: 2547XXXXXXXX (9 digits after 254)'
+            }), 400
+        
+        # Validate that digits after 254 are numbers and start with valid Kenyan prefix
+        digits_after_254 = phone_number[3:]
+        if not digits_after_254.isdigit():
+            return jsonify({
+                'success': False, 
+                'error': 'Phone number must contain only digits!'
+            }), 400
+        
+        # Check if it starts with valid Kenyan mobile prefix (7 for Safaricom/Airtel, 1 for Telkom)
+        if not digits_after_254.startswith(('7', '1')):
+            return jsonify({
+                'success': False, 
+                'error': 'Invalid Kenyan mobile number! Must start with 2547 or 2541'
+            }), 400
+        
+        # Validate reference length (8 characters)
+        if len(external_reference) != 8:
+            return jsonify({
+                'success': False, 
+                'error': 'Reference must be exactly 8 characters long!'
+            }), 400
         
         # Prepare Basic Auth credentials
         credentials = f"{API_USERNAME}:{API_PASSWORD}"
@@ -175,7 +201,7 @@ def process_payment():
         payment_data = {
             'amount': int(amount),
             'phone_number': phone_number,
-            'channel_id': 1959,
+            'channel_id': getenv('PAYHERO_CHANNEL_ID'),
             'provider': 'm-pesa',
             'external_reference': external_reference,
             'callback_url': CALLBACK_URL
