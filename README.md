@@ -1,84 +1,214 @@
-## ◇────── PAYHERO_FLASK_MPESA ───────◇
+PayHero Flask M-Pesa Integration
 
-ㅤ
-<p align="center">
-  <a href="" rel="noopener">
-    <img width="300px" height="300px" src="https://your-image-host.com/logo.png" alt="Mini Pesa Logo">
-  </a>
-</p>
+A clean Flask application that integrates PayHero M-Pesa STK Push, stores transactions in SQLite, handles callbacks, and supports payment reconciliation.
 
-![Python](https://img.shields.io/badge/Python-3.7+-blue) ![Flask](https://img.shields.io/badge/Flask-Framework-orange) ![M-Pesa](https://img.shields.io/badge/M--Pesa-PayHero-green) ![License](https://img.shields.io/badge/License-MIT-lightgrey)
+Features
 
----
+M-Pesa STK Push via PayHero API
 
-## 🌟 Features
+Strict Kenyan phone number validation (2547XXXXXXXX / 2541XXXXXXXX)
 
-- 💸 Initiate **M-Pesa STK Push** payments  
-- 🖥️ Single-page **responsive interface**  
-- 🔄 **Callback handling** and real-time status updates  
-- 📊 Track all payment attempts in a **local database**  
-- ⚡ Lightweight and easy to configure  
+SQLite database for transaction tracking
 
----
+Callback handling with detailed status mapping
 
-## 🚀 Installation & Setup
+Payment reconciliation endpoint
 
-### 1️⃣ Environment Variables
+Callback logging for debugging & auditing
 
-Create a `.env` file in your project root:
+Environment-based configuration (.env)
 
-```env
-SECRET_KEY=your-secret-key
-API_USERNAME=your-payhero-username
-API_PASSWORD=your-payhero-password
-CALLBACK_URL=https://your-domain.com/callback
-CHANNEL_ID=1959
-Use env.example as a template.
+Project Structure
+payhero_flask_mpesa/
+├── app.py
+├── requirements.txt
+├── README.md
+├── LICENSE
+├── .env
+└── templates/
+    └── index.html
 
-2️⃣ Install Dependencies
-bash
-Copy code
+Requirements
+
+Python 3.8+
+
+PayHero API credentials
+
+Internet access (for PayHero requests)
+
+Installation
+1. Clone the repository
+git clone https://github.com/yourusername/payhero_flask_mpesa.git
+cd payhero_flask_mpesa
+
+2. Create a virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate
+
+3. Install dependencies
 pip install -r requirements.txt
-3️⃣ Run the App
-bash
-Copy code
+
+Environment Configuration
+
+Create a .env file in the project root:
+
+SECRET_KEY=dev_secret_key
+DATABASE=transactions.db
+
+PAYHERO_BASE_URL=https://backend.payhero.co.ke/api/v2
+PAYHERO_CHANNEL_ID=your_channel_id
+PAYHERO_PROVIDER=m-pesa
+
+API_USERNAME=your_payhero_api_username
+API_PASSWORD=your_payhero_api_password
+
+CALLBACK_URL=https://your_domain.com/callback
+
+⚠️ Important Notes
+
+CALLBACK_URL must be publicly accessible (use Ngrok during development)
+
+Never commit .env to version control
+
+Credentials must match your PayHero dashboard
+
+Running the Application
 python app.py
-Open http://localhost:7000 in your browser.
 
-📷 Screenshots
-<details> <summary><b>Click to view the payment page</b></summary> <br/> <p align="center"> <img src="https://your-image-host.com/payment_page.png" width="400px"> </p> </details> <details> <summary><b>Click to view callback logs</b></summary> <br/> <p align="center"> <img src="https://your-image-host.com/callback_logs.png" width="400px"> </p> </details>
-🔗 API Endpoints
-Endpoint	Method	Description
-/	GET	Serve payment page
-/pay	POST	Initiate payment
-/callback	POST	Handle payment callbacks
-/reconcile/<reference>	GET	Check payment status
 
-📁 Project Structure
-bash
-Copy code
-mini_pesa/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Python dependencies
-├── templates/
-│   └── payment.html       # Single-page payment interface
-├── env.example            # Template for environment variables
-├── transactions.db        # SQLite database (auto-created)
-└── callback_logs.json     # Callback logs (auto-created)
-⚠️ Notes
-Ensure CALLBACK_URL is publicly accessible.
+The app will start on:
 
-Do not commit .env, transactions.db, or callback_logs.json.
+http://localhost:7000
 
-Payment PINs are never stored.
 
-Default CHANNEL_ID is 1959 (change if needed).
+On startup:
 
-📞 Support & Contact
-🐦 Telegram: @DevMoses
+SQLite database (transactions.db) is auto-created
 
-🌐 Portfolio: devmoses.online
+payments table is initialized automatically
 
-📄 License
+Endpoints Overview
+/ – Payment Page
 
-Built with ❤️ by DevMoses
+Displays the HTML payment form.
+
+/pay – Initiate M-Pesa STK Push
+
+Method: POST
+
+Form Fields:
+
+amount – Minimum KES 1
+
+phone_number – Format: 2547XXXXXXXX
+
+external_reference – Exactly 8 characters, unique
+
+Example Response (Success):
+
+{
+  "success": true,
+  "message": "M-Pesa STK initiated successfully! Check your phone.",
+  "reference": "ABCD1234",
+  "payhero_reference": "PHR-XXXX"
+}
+
+/callback – PayHero Callback Endpoint
+
+Method: POST or GET
+
+Handles:
+
+Successful payments
+
+Failures
+
+User cancellations
+
+Timeouts
+
+Automatically:
+
+Updates transaction status
+
+Logs callbacks to callback_logs.json
+
+/reconcile/<reference> – Recheck Payment Status
+
+Method: GET
+
+Used when:
+
+Callback delays occur
+
+Network issues happen
+
+Manual verification is needed
+
+Returns:
+
+Local DB status
+
+Remote PayHero status (if available)
+
+Payment Status Mapping
+Result Code	Status	Description
+0	completed	Payment successful
+1	failed	General failure
+1031	cancelled	User cancelled
+1032	cancelled	User cancelled
+1037	timeout	Request timeout
+Others	failed	API / system error
+Database Schema
+
+Table: payments
+
+Column	Type	Description
+id	INTEGER	Primary key
+phone	TEXT	Customer phone number
+amount	REAL	Payment amount
+reference	TEXT	Unique external reference
+status	TEXT	pending / completed / failed
+reason	TEXT	Status explanation
+timestamp	DATETIME	Created time
+updated_at	DATETIME	Last update
+Callback Logs
+
+All callbacks are stored in:
+
+callback_logs.json
+
+
+Keeps last 1000 entries
+
+Useful for debugging PayHero issues
+
+Safe to rotate or delete
+
+Security Notes (Important)
+
+Use HTTPS in production
+
+Disable debug=True in production
+
+Validate callback IPs if PayHero provides them
+
+Store secrets in environment variables only
+
+Development Tips
+
+Use Ngrok for local callback testing
+
+Always verify external_reference uniqueness
+
+Monitor callback logs during live payments
+
+Use /reconcile if callbacks fail
+
+License
+
+MIT License — free to use, modify, and distribute.
+
+Author
+
+Built with ❤️ using Flask & PayHero M-Pesa API.
