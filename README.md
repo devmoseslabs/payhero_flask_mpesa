@@ -1,20 +1,23 @@
-🚀 PayHero Flask M-Pesa Integration
+# PayHero Flask M-Pesa Integration
 
-A clean Flask + PayHero integration for M-Pesa STK Push, with callbacks, reconciliation, and SQLite persistence.
+A Flask application for integrating **PayHero M-Pesa STK Push** with callback handling, transaction storage, and reconciliation.
 
-<p align="center"> <img src="https://img.shields.io/badge/Flask-Backend-black?style=for-the-badge&logo=flask" /> <img src="https://img.shields.io/badge/M--Pesa-Payments-green?style=for-the-badge" /> <img src="https://img.shields.io/badge/SQLite-Database-blue?style=for-the-badge" /> </p>
-✨ What This Project Does
+---
 
-✅ Initiates M-Pesa STK Push via PayHero
-✅ Validates Kenyan phone numbers strictly (2547… / 2541…)
-✅ Stores transactions safely in SQLite
-✅ Handles PayHero callbacks correctly
-✅ Supports manual payment reconciliation
-✅ Logs callbacks for debugging & audits
+## Features
 
-Built to survive real-world failures (timeouts, retries, missing callbacks).
+- M-Pesa STK Push via PayHero API
+- Strict Kenyan phone number validation (2547XXXXXXXX / 2541XXXXXXXX)
+- SQLite database for transaction tracking
+- Reliable callback processing
+- Manual payment reconciliation endpoint
+- Callback logging for audits and debugging
+- Environment-based configuration
 
-📂 Project Structure
+---
+
+## Project Structure
+
 payhero_flask_mpesa/
 ├── app.py
 ├── requirements.txt
@@ -22,30 +25,48 @@ payhero_flask_mpesa/
 ├── LICENSE
 ├── .env
 └── templates/
-    └── index.html
+└── index.html
 
-🧰 Tech Stack
-Tool	Purpose
-Flask	Backend API
-SQLite	Local database
-PayHero API	M-Pesa STK Push
-Python Dotenv	Environment variables
-Requests	HTTP calls
-⚙️ Installation
-1️⃣ Clone the repo
+yaml
+Copy code
+
+---
+
+## Requirements
+
+- Python 3.8+
+- PayHero API credentials
+- Internet access
+
+---
+
+## Installation
+
+### Clone the repository
 git clone https://github.com/yourusername/payhero_flask_mpesa.git
 cd payhero_flask_mpesa
 
-2️⃣ Create & activate virtual environment
+graphql
+Copy code
+
+### Create and activate virtual environment
 python3 -m venv venv
 source venv/bin/activate
 
-3️⃣ Install dependencies
+shell
+Copy code
+
+### Install dependencies
 pip install -r requirements.txt
 
-🔐 Environment Setup
+yaml
+Copy code
 
-Create a .env file in the project root:
+---
+
+## Environment Configuration
+
+Create a `.env` file in the project root:
 
 SECRET_KEY=dev_secret_key
 DATABASE=transactions.db
@@ -59,137 +80,108 @@ API_PASSWORD=your_payhero_api_password
 
 CALLBACK_URL=https://your_domain.com/callback
 
-⚠️ Important
+yaml
+Copy code
 
-CALLBACK_URL must be public
+### Notes
+- `CALLBACK_URL` must be publicly accessible
+- Use Ngrok during development
+- Do not commit `.env` to GitHub
 
-Use Ngrok during development
+---
 
-Never commit .env
+## Running the Application
 
-▶️ Running the App
 python app.py
 
+nginx
+Copy code
 
-App runs on:
+The app runs on:
 
 http://localhost:7000
 
+yaml
+Copy code
 
-🧠 On startup:
+On startup:
+- SQLite database is created automatically
+- Payments table is initialized
 
-Database is auto-created
+---
 
-Payments table is initialized
+## API Endpoints
 
-No manual migration needed
+### `/`
+Displays the payment page.
 
-🌍 API Endpoints
-🏠 /
+### `/pay` (POST)
+Initiates M-Pesa STK Push.
 
-Displays the payment form.
+Required fields:
+- amount (minimum 1 KES)
+- phone_number (2547XXXXXXXX)
+- external_reference (exactly 8 characters)
 
-💳 /pay — Initiate STK Push
+### `/callback` (POST / GET)
+Handles PayHero payment callbacks and updates transaction status.
 
-Method: POST
+### `/reconcile/<reference>` (GET)
+Re-checks payment status from PayHero and updates local records.
 
-Required Fields
+---
 
-amount (≥ 1 KES)
+## Payment Status Mapping
 
-phone_number → 2547XXXXXXXX
+| Result Code | Status     |
+|------------|------------|
+| 0          | completed  |
+| 1          | failed     |
+| 1031       | cancelled  |
+| 1032       | cancelled  |
+| 1037       | timeout    |
+| others     | failed     |
 
-external_reference → 8 characters
+---
 
-✅ Success Response
+## Database Schema
 
-{
-  "success": true,
-  "message": "M-Pesa STK initiated successfully!",
-  "reference": "ABCD1234"
-}
+**payments**
 
-🔔 /callback — PayHero Webhook
+| Column       | Description |
+|-------------|-------------|
+| phone       | Customer phone number |
+| amount      | Payment amount |
+| reference   | Unique reference |
+| status      | Payment state |
+| reason      | Status explanation |
+| timestamp   | Created time |
+| updated_at  | Last update |
 
-Method: POST / GET
+---
 
-Handles:
+## Logs
 
-✔ Success
-
-❌ Failure
-
-⏱ Timeout
-
-🚫 User cancellation
-
-Automatically updates DB & logs data.
-
-🔁 /reconcile/<reference>
-
-Method: GET
-
-Used when:
-
-Callback delays occur
-
-Network interruptions happen
-
-Manual verification is required
-
-Returns:
-
-Local DB status
-
-Remote PayHero status
-
-📊 Payment Status Mapping
-Result Code	Status
-0	✅ Completed
-1	❌ Failed
-1031	🚫 Cancelled
-1032	🚫 Cancelled
-1037	⏱ Timeout
-Others	❌ Failed
-🗄 Database Schema
-payments Table
-Column	Description
-phone	Customer number
-amount	Amount paid
-reference	Unique ID
-status	Payment state
-reason	Status message
-timestamp	Created time
-updated_at	Last update
-📝 Callback Logs
-
-Stored in:
+Callback logs are stored in:
 
 callback_logs.json
 
+yaml
+Copy code
 
-Keeps last 1000 callbacks
+- Last 1000 callbacks are retained
+- Useful for debugging and audits
 
-Perfect for debugging PayHero issues
+---
 
-🔒 Security Tips
+## Security Notes
 
-🔐 Use HTTPS in production
-🚫 Disable debug=True
-🛡 Validate webhook source IPs
-🧾 Never log credentials
+- Use HTTPS in production
+- Disable debug mode
+- Store secrets in environment variables only
 
-🧪 Dev Tips
+---
 
-💡 Use Ngrok for callbacks
-💡 Always reconcile stuck payments
-💡 Monitor callback logs
-💡 Handle retries gracefully
+## License
 
-📄 License
-
-MIT — free to use, modify, and ship.
-
-👨🏽‍💻 Author
-
-Built with Flask, caffeine ☕ and real-world payment pain.
+MIT License
