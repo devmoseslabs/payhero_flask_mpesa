@@ -179,7 +179,7 @@ callback_logs.json
     <img src="https://img.shields.io/badge/WhatsApp-Chat_with_me-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="WhatsApp">
   </a>
 </p>
----
+
 ## License
 
 MIT License
