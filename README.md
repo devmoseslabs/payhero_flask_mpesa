@@ -43,7 +43,7 @@ payhero_flask_mpesa/
 
 ### Clone the repository
 ```
-git clone https://github.com/yourusername/payhero_flask_mpesa.git
+[git clone https://github.com/devmoseslabs/payhero_flask_mpesa.git]
 cd payhero_flask_mpesa
 ```
 
@@ -173,7 +173,13 @@ callback_logs.json
 - Store secrets in environment variables only
 
 ---
+## Whatsapp
+<a href="https://wa.me/YOUR_NUMBER?text=Hello%20there!" target="_blank">
+  <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" width="30" height="30">
+  Chat with me
+</a>
 
+---
 ## License
 
 MIT License
