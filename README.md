@@ -174,11 +174,11 @@ callback_logs.json
 
 ---
 ## Whatsapp
-<a href="https://wa.me/YOUR_NUMBER?text=Hello%20there!" target="_blank">
-  <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" width="30" height="30">
-  Chat with me
-</a>
-
+<p align="center">
+  <a href="https://wa.me/254706850664?text=Hello%20there!" target="_blank">
+    <img src="https://img.shields.io/badge/WhatsApp-Chat_with_me-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="WhatsApp">
+  </a>
+</p>
 ---
 ## License
 
