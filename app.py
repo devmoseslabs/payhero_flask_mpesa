@@ -12,7 +12,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
-app.config['DATABASE'] = 'transactions.db'
+app.config['DATABASE'] = '/tmp/transactions.db'
 
 # Environment variables
 API_USERNAME = os.getenv('API_USERNAME')
