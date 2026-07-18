@@ -43,7 +43,7 @@ payhero_flask_mpesa/
 
 ### Clone the repository
 ```
-[git clone https://github.com/devmoseslabs/payhero_flask_mpesa.git]
+git clone https://github.com/devmoseslabs/payhero_flask_mpesa.git
 cd payhero_flask_mpesa
 ```
 
